@@ -1,0 +1,1878 @@
+{UTF-8}
+Additional Insulation R value=
+	0
+	~	
+	~		|
+
+SA over R value=
+	(163.84/(8.63+Additional Insulation R value)+163.84/(4.4+Additional Insulation R value\
+		)+225.28/3.17)/Insulation imperfections
+	~	
+	~		|
+
+Weight for Consumer Power Use=
+	0.05
+	~	
+	~		|
+
+Wind Cost Adjustment=
+	1-0.012*0
+	~	
+	~		|
+
+Optimization function=
+	Weight for Stability*Net Blackout Ratio+Weight for Renewable use*Percent of net Power used for Renewables\
+		+Weight for Xcel Profit Margin
+	*Average Xcel GP vs Target+Average Relative IFME Delta*Weight For Consumer Expenses+\
+		Weight for Consumer Power Use*Average Percent power use
+	~	
+	~		|
+
+Weighted Average Cost of Renewables=
+	(Hydro Cost per KwH*Hydro Renewable Frac+Solar Cost per kWh*Solar Renewable Frac+Wind Cost per kWh\
+		*Wind Renewable Frac*Wind Cost Adjustment)
+	~	
+	~		|
+
+Average Percent power use=
+	SMOOTH(percent Change in Power use,FINAL TIME)
+	~	
+	~		|
+
+Renewable Cost to Utility=
+	Renewable Power Demand*(Hydro Cost per KwH*Hydro Renewable Frac+Solar Cost per kWh*Solar Renewable Frac\
+		+Wind Cost per kWh
+	*Wind Renewable Frac*Wind Cost Adjustment)
+	~	$
+	~		|
+
+Median household Income=
+	4940.6*Minimum Wage+24241
+	~	$
+	~		|
+
+Average Xcel GP vs Target=
+	(SMOOTH(Xcel GP, FINAL TIME )-Xcel target Gp)/Xcel target Gp
+	~	
+	~		|
+
+Minimum Wage=
+	14.93
+	~	 [7,25,0.13]
+	~		|
+
+PTC Rate=
+	0.0275
+	~	 [0,0.07,0.0005]
+	~	0.0275 Default
+	|
+
+Average Relative IFME Delta=
+	SMOOTH((Maximum IFME-Instantaneous Fraction of Median Income for Electricity)/Maximum IFME\
+		,FINAL TIME)
+	~	
+	~		|
+
+PTC Rate Adjustment for new Renewables=
+	PTC Rate*(0.25+Proportion of new renewables)
+	~	$/kW
+	~	0.0275 default
+	|
+
+Weight For Consumer Expenses=
+	0.2
+	~	
+	~		|
+
+GP Delta=
+	DELAY FIXED((Xcel target Gp-Xcel GP)/Xcel target Gp,4,0)
+	~	
+	~		|
+
+Elasticity of Thermal to Renewables=
+	MIN((Weighted Average Cost of Renewables-PTC Rate Adjustment for new Renewables-Weighted Average Cost of Thermal Power\
+		)/(Weighted Average Cost of Renewables
+	 - PTC Rate Adjustment for new Renewables + Weighted Average Cost of Thermal Power),\
+		1)*(1+GP Delta*2)
+	~	
+	~		|
+
+Average Power Factor=
+	0.9
+	~	Frac
+	~		|
+
+Apparent Power Demand=
+	(Rate of Retail Power Demand+Industrial Electric Consumption)/Average Power Factor
+	~	
+	~		|
+
+Net Cost of installation=
+	Cost of Smart Thermostat*Fraction of Smart Thermostat users*Number of Households in CO
+	~	
+	~		|
+
+Net PTC cost to government= INTEG (
+	PTC Delta and Cost to Government,
+		0)
+	~	
+	~		|
+
+Cost of Smart Thermostat=
+	150
+	~	$
+	~		|
+
+Thermostat setting=
+	((72*(1-Fraction of Smart Thermostat users))+(Fraction of Smart Thermostat users*Smart Thermostat Settings\
+		))*(2-SMOOTH(percent Change in Power use
+	-MIN(Comfort Threshold
+	,0), 720 ))
+	~	F
+	~	default 72
+	|
+
+Fraction of Smart Thermostat users=
+	0.8
+	~	
+	~		|
+
+Weight for Renewable use=
+	0.25
+	~	
+	~		|
+
+Weight for Stability=
+	0.35
+	~	
+	~		|
+
+Weight for Xcel Profit Margin=
+	0.15
+	~	
+	~		|
+
+Xcel target Gp=
+	0.18
+	~	
+	~		|
+
+AC On=
+	AC usage percent of population
+	~	
+	~		|
+
+AC power consumption=
+	Electric Load of AC*Fraction of households served by Xcel*Number of Active AC units
+	~	kW
+	~		|
+
+Molar Mass of wet air=
+	0.018*humidity ratio+0.029*(1-humidity ratio)
+	~	kg/mol
+	~		|
+
+Enthalpy of air into House=
+	specific internal energy-Rate of Heat Rejction by AC/Mass flow into house
+	~	kJ/kg
+	~		|
+
+AC usage percent of population=
+	NORMAL CDF((Temperature in House f -Thermostat setting)/Thermostat sd)
+	~	Fraction
+	~		|
+
+Evaporation energy of water=
+	2501
+	~	kJ/kg
+	~		|
+
+Proposed Rate Increase=
+	DELAY FIXED( MAX((Xcel target Gp-Xcel GP)*(1.04),0) , 24 , 0 )
+	~	
+	~		|
+
+Average square footage of a living place in the us=
+	1755
+	~	ft sq
+	~	Just a series of google searches
+	|
+
+COP of AC unit=
+	3
+	~	 [1,?]
+	~	Based on HVAC forum. 
+		https://ask.metafilter.com/192287/How-Efficient-Is-AC-AT-Removing-Heat
+	|
+
+mass of air in house=
+	Density of Air outdoors*Volume of house
+	~	kg
+	~		|
+
+specific internal energy=
+	Stored Energy of House/mass of air in house
+	~	
+	~		|
+
+Starting House Temperature=
+	17.78
+	~	C
+	~		|
+
+Outdoor Temperature C=
+	(Outdoor Temperature-32)*5/9
+	~	
+	~		|
+
+Partial Pressure of Water vapor=
+	Relative Humidity*611*exp(17.67*(Outdoor Temperature C)/(Outdoor Temperature C+273.15\
+		-29.65))
+	~	
+	~	https://earthscience.stackexchange.com/questions/2360/how-do-i-convert-specific-humid\
+		ity-to-relative-humidity
+		
+		specific humidity = humidity ratio at low temperatures
+		https://daytonashrae.org/psychrometrics/psychrometrics_hum.html#: \
+		:text=Specific%20Humidity%20(%CE%B3)&text=Note%20the%20difference%20in%20th\
+		e,pound%2Dmass%20of%20MOIST%20air.
+	|
+
+Heat Transfer into house=
+	(Outdoor Temperature C-Temperature in House C)*60*60*SA over R value/1000
+	~	kW
+	~		|
+
+House Temp delta=
+	Temperature in House f-Thermostat setting
+	~	
+	~		|
+
+Cycle duration as fraction of hour=
+	0.66
+	~	
+	~		|
+
+humidity ratio=
+	Partial Pressure of Water vapor*0.018/((101325-Partial Pressure of Water vapor)*Molar mass of dry air\
+		)
+	~	
+	~		|
+
+Density of Air outdoors=
+	101325*Molar Mass of wet air/(8.314*(Outdoor Temperature C+273.15))
+	~	{kg/m^3}
+	~		|
+
+Combo cv=
+	cv of air+humidity ratio*cv of water vapor
+	~	
+	~		|
+
+Insulation imperfections=
+	1
+	~	
+	~		|
+
+Electric Load of AC=
+	(Rate of Heat Rejction by AC*(COP of AC unit-1) )*AC On*Cycle duration as fraction of hour
+	~	
+	~		|
+
+Energy in to house=
+	(Enthalpy of air into House*Mass flow into house*60*60*AC On+Heat Transfer into house\
+		)*Cycle duration as fraction of hour
+	~	kJ/h
+	~		|
+
+Energy out=
+	(Mass flow into house*(Stored Energy of House/mass of air in house)*60*60*AC On)*Cycle duration as fraction of hour
+	~	kJ/h
+	~		|
+
+Temperature in House f=
+	Temperature in House C*9/5+32
+	~	
+	~		|
+
+Comfort Threshold=
+	DELAY FIXED(SMOOTH(((Outdoor Temperature-Temperature in House f)*Percent of People Home\
+		)/Outdoor Temperature,12),2,0)
+	~	
+	~		|
+
+cp of Water=
+	1.86
+	~	
+	~		|
+
+Mass flow into house=
+	(Density of Air outdoors*Volume flow of AC unit)
+	~	kg/s
+	~		|
+
+cv of water vapor=
+	1.8
+	~	
+	~		|
+
+Relative Humidity=
+	0.33
+	~	
+	~		|
+
+Rate of Heat Rejction by AC=
+	(20*Average square footage of a living place in the us)*1.055/3600
+	~	kW
+	~	Based of sizing guidlines of dept. of Energy. 20 Btu cooling capacity/ sq \
+		ft.
+	|
+
+Molar mass of dry air=
+	0.029
+	~	kg/mol
+	~		|
+
+Stored Energy of House= INTEG (
+	Energy in to house-Energy out,
+		((Starting House Temperature+273.15)*cv of air+humidity ratio*(cv of water vapor*(Starting House Temperature\
+		+273.15)+2501))*mass of air in house)
+	~	
+	~		|
+
+Enthalpy of Air Outside=
+	cp of Air*(273.15+Temperature in House C)+humidity ratio*(cp of Water*(273.15+Temperature in House C\
+		)+Evaporation energy of water
+	)
+	~	kJ/kg
+	~		|
+
+Temperature in House C=
+	(((Stored Energy of House/mass of air in house)-2501*humidity ratio)/(cv of air+cv of water vapor\
+		*humidity ratio))-273.15
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Volume flow of AC unit=
+	52*0.001
+	~	{m^3/(s*kW)}
+	~		|
+
+cp of Air=
+	1.006
+	~	kJ/(kg*C)
+	~		|
+
+Volume of house=
+	720
+	~	{m^3}
+	~	average volume of house in america
+	|
+
+cv of air=
+	0.718
+	~	kJ/(kg*K)
+	~		|
+
+Fraction of Renewable Power to use=
+	MIN(MAX(IF THEN ELSE(Blackout Scenario=0, IF THEN ELSE(Elasticity of Thermal to Renewables\
+		<0, (-1*Elasticity of Thermal to Renewables/1+-1*Elasticity of Thermal to Renewables\
+		) , 1/5*((Elasticity of Thermal to Renewables+1)/Elasticity of Thermal to Renewables\
+		)) ,1) ,0) ,1)
+	~	 [0,?]
+	~	There are some things more terrifying than death
+		A nested if statement in vensim is one of them
+	|
+
+Inherent Renewable bias=
+	0.01
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Percent of People Home = WITH LOOKUP (
+	MODULO(Time,25),
+		 ([(0,0)-(10,10)],(0,0.9),(6,0.9),(12,0.25),(14,0.4),(16,0.4),(18,0.7),(20,0.8),(23\
+		,0.9),(24,0.9) ))
+	~	
+	~		|
+
+Thermal Power usage proxy=
+	Thermal Power Usage
+	~	
+	~		|
+
+Total Thermal Power used= INTEG (
+	Thermal Power usage proxy,
+		0)
+	~	
+	~		|
+
+Percent of net Power used for Renewables=
+	Total Renewable Power used/(Total Thermal Power used+Total Renewable Power used)
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Total Renewable Power used= INTEG (
+	Renewable Power use Proxy,
+		1)
+	~	
+	~		|
+
+Renewable Power use Proxy=
+	Renewable Power Demand
+	~	
+	~		|
+
+Natural Gas Capacity= INTEG (
+	Change in natural gas Capacity,
+		(2894)*1000)
+	~	kW
+	~	xcel financial report
+	|
+
+Net Blackout Ratio=
+	Outage Tracker/FINAL TIME
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Change in Wind Capacity=
+	DELAY FIXED(2181/(365*24*7), 8760 , 0 )
+	~	
+	~		|
+
+Clean Energy Plan Debt= INTEG (
+	Interest-Payments,
+		15*10^9)
+	~	
+	~		|
+
+Operating Expenses=
+	Thermal Power Production Cost to Utility+Renewable Cost to Utility+Xcel Colorado Overheads\
+		-PTC Delta and Cost to Government+Payments
+	~	
+	~	This should average to around $475000/hour
+	|
+
+Solar Capacity= INTEG (
+	Change in Solar Capacity,
+		1580)
+	~	MW
+	~		|
+
+Outage Tracker= INTEG (
+	Blackouts,
+		0)
+	~	
+	~		|
+
+Payments=
+	DELAY FIXED( IF THEN ELSE(Clean Energy Plan Debt>0, 224*10^6/(365*24) , 0 ) , 8760 ,\
+		 0 )
+	~	
+	~	0.097 makes the company go broke
+	|
+
+Blackouts=
+	Blackout Scenario
+	~	
+	~		|
+
+Wind Power generated=
+	MAX(SMOOTH(RANDOM PINK NOISE(Wind Capacity, 1667, 48, 99 ),12),0)
+	~	MW
+	~	Xcel Dependable capacity for wind
+	|
+
+Change in Coal Capacity=
+	-(1655*1000/(365*24*7))
+	~	
+	~		|
+
+Change in Hydro Capacity=
+	1170/(365*24*7)
+	~	
+	~	Counting this as storage as well b/c it works sort of the same way, and \
+		costs roughly the same maintanence wise.
+	|
+
+Change in natural gas Capacity=
+	0
+	~	
+	~		|
+
+Interest=
+	Clean Energy Plan Debt*0.015*PULSE TRAIN( 61320 , 1 , 8760 ,  FINAL TIME)
+	~	
+	~	Delay till project completion for interest
+	|
+
+Change in Solar Capacity=
+	800/(365*24)
+	~	
+	~	Xcel says that they're going to add 800 MW of Solar by end of 2023
+	|
+
+Proportion of new renewables=
+	(Wind Capacity+Solar Capacity+Hydro and Storage Capacity-1580-4208*0.5-233)/(Hydro and Storage Capacity\
+		+Solar Capacity
+	+Wind Capacity)
+	~	
+	~		|
+
+Hydro and Storage Capacity= INTEG (
+	Change in Hydro Capacity,
+		233)
+	~	MW
+	~	Xcel Financial Report
+	|
+
+Smart Thermostat Settings = WITH LOOKUP (
+	MODULO(Time,25),
+		                 ([(0,0)-(10,10)],(0,72),(8,72),(10,85),(12,88),(14,85),(17,72),(24\
+		,72) ))
+	~	F
+	~		|
+
+Coal Power Capacity= INTEG (
+	Change in Coal Capacity,
+		1655*1000)
+	~	kW
+	~	As per Xcel Financial reports
+	|
+
+Wind Capacity= INTEG (
+	Change in Wind Capacity,
+		4082*0.5)
+	~	
+	~		|
+
+Solar Power Generated=
+	Solar Capacity*Solar power vs time function
+	~	MW
+	~		|
+
+Profits For Utility= INTEG (
+	Utility Revenue-Operating Expenses,
+		0)
+	~	$
+	~	Damn near spot on for the year end profit for Xcel in CO.
+		net Profit Calculated from EPS in CO, adjusted based on ratio of revenue \
+		brought in by electric only: $581.33M
+	~	:SUPPLEMENTARY 
+	|
+
+Solar power vs time function=
+	MAX(-1/49*(MODULO(Time,25)-4)*(MODULO(Time,25)-18),0)
+	~	
+	~	This is a parabola that cannot go below zero and follows the solar \
+		distribution. The max height is normalized to 1, so that any maximum \
+		capacity can be multiplied by it to create a solar distrubution that \
+		varies wrt an external capacity
+	|
+
+Singular Household Electric Expenses= INTEG (
+	Instant Electric Expense Per House,
+		0)
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Residential Rates=
+	(Time of use Rates)*(1+Rate Changes)
+	~	
+	~		|
+
+Instant Power Consumption per household=
+	((AC power consumption+Light Power Consumption)/(Number of Households in CO*Fraction of households served by Xcel\
+		))+Other Residential Average Power Consumption per Household
+	~	kW
+	~		|
+
+PTC Delta and Cost to Government=
+	SMOOTH(PTC Rate Adjustment for new Renewables*Renewable Power Demand,720)
+	~	$/Hour
+	~		|
+
+Instant Electric Expense Per House=
+	Instant cost to consumer per household
+	~	
+	~		|
+
+Utility Revenue=
+	MIN((Residential Rates)*Rate of Retail Power Demand+"Industrial/Commerical Rates"*Industrial Electric Consumption\
+		, Residential Rates
+	*Generation Capacity)
+	~	$/Hour
+	~	Residential Rates are higher than Commerical, so if there's blackouts to the extent \
+		the company is floundering, it's going to residential people before \
+		workplaces.
+		IDK if that's how it actually works, but it's an easy fix if it's not.
+	|
+
+Renewable Power Demand=
+	MIN(Apparent Power Demand*Fraction of Renewable Power to use,MIN(Instantaneous Renewable Power Capacity\
+		,Apparent Power Demand))
+	~	kW
+	~		|
+
+Co2 Emissions= INTEG (
+	Rate of CO2 Emission,
+		0)
+	~	kg Co2
+	~		~	:SUPPLEMENTARY 
+	|
+
+"NG CO2/kwh"=
+	0.433
+	~	
+	~		|
+
+Instantaneous Renewable Power Capacity=
+	(Hydro and Storage Capacity*1000+Solar Power Generated*1000+Wind Power generated*1000\
+		)
+	~	kW
+	~		|
+
+Weighted Average Cost of Thermal Power=
+	(Cost per kWh Coal*Fraction of Coal Power to Thermal+Fraction of Natural Gas to Thermal\
+		*Cost per kWh natural Gas)/2
+	~	
+	~		|
+
+Blackout Scenario=
+	IF THEN ELSE(Power Surplus<=0, 1 , 0 )
+	~	
+	~	If Blackout, 1, if no Blackout, 0
+	|
+
+Carbon Tax Rate=
+	0
+	~	$/tonneCo2 [0,500]
+	~		|
+
+Thermal Power Usage=
+	MIN(Thermal Capacity,Thermal Power Demand)
+	~	kW
+	~		|
+
+"Coal CO2/kwh"=
+	1.025
+	~	
+	~		|
+
+Cost per kWh Coal=
+	0.0051+"Coal CO2/kwh"*Carbon Tax Rate/1000
+	~	$
+	~		|
+
+Cost per kWh natural Gas=
+	0.0242+"NG CO2/kwh"*Carbon Tax Rate/1000
+	~	$
+	~		|
+
+Thermal Power Demand=
+	IF THEN ELSE(Blackout Scenario=0, MAX(Apparent Power Demand-Renewable Power Demand,0\
+		) , Thermal Capacity )
+	~	kW
+	~		|
+
+Thermal Power Production Cost to Utility=
+	Thermal Power Usage*(Cost per kWh Coal*Fraction of Coal Power to Thermal+Cost per kWh natural Gas\
+		*Fraction of Natural Gas to Thermal
+	)
+	~	$
+	~		|
+
+Rate of CO2 Emission=
+	(Fraction of Coal Power to Thermal*"Coal CO2/kwh"+Fraction of Natural Gas to Thermal\
+		*"NG CO2/kwh")*Thermal Power Usage
+	~	
+	~		|
+
+Rate of Retail Power Demand=
+	MIN(AC power consumption+Light Power Consumption+Other Residential Average Power Consumption per Household\
+		*Number of Households in CO
+	*Fraction of households served by Xcel,Generation Capacity)
+	~	
+	~	Bounded by Generation Capacity
+	|
+
+AC units in Colorado=
+	Number of Households in CO*0.82
+	~	
+	~		|
+
+Light Power Consumption=
+	(Light Time Use*Individual House Light Consumption*Households with lights*10^6)*percent Change in Power use\
+		*Fraction of households served by Xcel
+	~	kW
+	~		|
+
+"Industrial/Commerical Rates"=
+	0.089
+	~	$/kWh
+	~	0.089 normal
+	|
+
+Thermal Capacity=
+	(Coal Power Capacity+Natural Gas Capacity)
+	~	kW
+	~		|
+
+Xcel Colorado Overheads=
+	Conservation and Demand side managing+Cost of Sales+Depreciation and Amoritization+"Taxes (Other than Income Taxes)"\
+		+Power Line Maintenance
+	~	
+	~		|
+
+Power Line Maintenance=
+	Fractional Distribution of Cost to Colorado*628*10^6
+	~	$
+	~		|
+
+Daily Power Fudge Factor=
+	0.7
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Fraction of households served by Xcel=
+	1.6*10^6/Number of Households in CO
+	~	Frac
+	~		|
+
+Singular Household Power Consumption= INTEG (
+	Power Consumption per house,
+		0)
+	~	
+	~	If run for a month this final should be 703
+	~	:SUPPLEMENTARY 
+	|
+
+Power Consumption per house=
+	Instant Power Consumption per household
+	~	
+	~		|
+
+percent Change in Power use=
+	MAX(1+"Change in Rates %"*Residential Price Elasticity+Floored IFME delta,0)
+	~	
+	~		|
+
+Floored IFME delta=
+	DELAY FIXED(MIN(0,Maximum IFME-Instantaneous Fraction of Median Income for Electricity\
+		),720,0)
+	~	Frac
+	~		|
+
+Maximum IFME=
+	0.03
+	~	Frac
+	~		|
+
+ratio of water heating to total consumption=
+	SMOOTH(Water Heating/Instant Power Consumption per household,72)
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Median Household Income per hour=
+	Median household Income/(365*24)
+	~	
+	~		|
+
+Number of Households in CO=
+	2.38458e+06
+	~	
+	~		|
+
+Rate application Time=
+	17520
+	~	hours
+	~	2 Years
+	|
+
+Other Residential Average Power Consumption per Household=
+	0.5*percent Change in Power use*(All Refrigerators+All Tvs+Clothes Dryers+Clothes Washers\
+		+Cooking+Water Heating+Freezers)
+	~	
+	~	the 0.5 is a fudge factor. These values are taken directly from the EPA, \
+		so I'm not sure. But everything else seems to work fine, just these are \
+		persistently too high.
+	|
+
+Rate Increase Pulse=
+	Proposed Rate Increase*PULSE TRAIN(2160, 1 , Rate application Time , FINAL TIME )
+	~	
+	~		|
+
+Base Rate=
+	0.12
+	~	$/kWh
+	~		|
+
+Instant cost to consumer per household=
+	Instant Power Consumption per household*Residential Rates
+	~	
+	~		|
+
+Xcel GP=
+	SMOOTH((Utility Revenue-Operating Expenses)/Utility Revenue,720)
+	~	
+	~		|
+
+Rate Changes= INTEG (
+	Rate Increase Pulse,
+		0)
+	~	
+	~		|
+
+Instantaneous Fraction of Median Income for Electricity=
+	SMOOTH(Instant cost to consumer per household/Median Household Income per hour,12)*2
+	~	
+	~		|
+
+Ac Consumption Rate=
+	AC power consumption
+	~	
+	~		|
+
+Lights Total Daily Consumption= INTEG (
+	Light power consumption rate,
+		0)
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Ac Total Daily Consumption= INTEG (
+	Ac Consumption Rate,
+		0)
+	~	
+	~		~	:SUPPLEMENTARY 
+	|
+
+Industrial Electric Consumption=
+	2.05*10^6
+	~	kW
+	~	This is an average from the epa website distribution. This can be \
+		extrapolated out to a time based variable, given the average workday
+	|
+
+Light power consumption rate=
+	Light Power Consumption
+	~	
+	~		|
+
+"Change in Rates %"=
+	(Residential Rates-Base Rate)/Base Rate
+	~	
+	~		|
+
+All Refrigerators=
+	0.22
+	~	
+	~		|
+
+All Tvs=
+	0.021
+	~	kW
+	~		|
+
+Generation Capacity=
+	Instantaneous Renewable Power Capacity+Thermal Capacity
+	~	kW
+	~		|
+
+"Taxes (Other than Income Taxes)"=
+	137*Fractional Distribution of Cost to Colorado*10^6
+	~	
+	~		|
+
+Clothes Dryers=
+	0.08
+	~	
+	~		|
+
+Clothes Washers=
+	0.01
+	~	kW
+	~		|
+
+Conservation and Demand side managing=
+	Fractional Distribution of Cost to Colorado*63*10^6
+	~	$
+	~		|
+
+Cooking=
+	0.033
+	~	kW
+	~		|
+
+Cost of Sales=
+	11*Fractional Distribution of Cost to Colorado*10^6
+	~	$
+	~		|
+
+Wind Cost per kWh=
+	0.019
+	~	 [0.0001,?]
+	~	0.019
+	|
+
+Depreciation and Amoritization=
+	Fractional Distribution of Cost to Colorado*565*10^6
+	~	
+	~	This is mostly for reinvestment! Xcel says 2022 it was for wind farms. \
+		However, Xcel doesn't build them, so this is where things get complicated \
+		with the PPAs
+	|
+
+Fraction of Coal Power to Thermal=
+	Coal Power Capacity/Thermal Capacity
+	~	Frac
+	~		|
+
+Fraction of Natural Gas to Thermal=
+	Natural Gas Capacity/Thermal Capacity
+	~	Frac
+	~		|
+
+Fractional Distribution of Cost to Colorado=
+	0.32/(3*30*24)
+	~	
+	~	0.32 is the fraction of expenses relativley designated to colorado based on the eps
+		divided by 3 because all numbers are from a quarterly report, and divided \
+		by 30 to get to days. A further 24 to get to hours
+	|
+
+Freezers=
+	0.061
+	~	kW
+	~		|
+
+Solar Renewable Frac=
+	Solar Power Generated*1000/Instantaneous Renewable Power Capacity
+	~	
+	~		|
+
+Hydro Cost per KwH=
+	0.01244
+	~	$/kWh
+	~		|
+
+Hydro Renewable Frac=
+	Hydro and Storage Capacity*1000/Instantaneous Renewable Power Capacity
+	~	
+	~		|
+
+Solar Cost per kWh=
+	0.069
+	~	$/kWh
+	~	Citation: Xcel Annual report 2022, PPA agreement solar cost per mwh
+	|
+
+Water Heating=
+	0.27
+	~	kW
+	~		|
+
+Wind Renewable Frac=
+	Wind Power generated*1000/Instantaneous Renewable Power Capacity
+	~	
+	~		|
+
+Time of use Rates = WITH LOOKUP (
+	MODULO(Time,25),
+		    ([(0,0)-(26.5813,0.24117)],(0,0.12),(13,0.12),(13,0.15),(15,0.15),(15,0.19),(16\
+		,0.19),(16,0.19),(17,0.19),(17,0.19),(19,0.19),(19,0.12),(24,0.12) ))
+	~	$/kWh
+	~		|
+
+Residential Price Elasticity=
+	-0.12
+	~	
+	~	chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.eia.gov/analysis/stud\
+		ies/buildings/energyuse/pdf/price_elasticities.pdf
+		
+		page: 23
+	|
+
+Power Surplus=
+	Generation Capacity-Apparent Power Demand
+	~	
+	~		|
+
+Households with lights=
+	2.26
+	~	
+	~		|
+
+Individual House Light Consumption=
+	0.048*74/12
+	~	kW
+	~	12 is a fudge Factor here to match the correct value for percent of residential \
+		consumption.
+		74 comes from a study saying that's the average number of light bulbs per \
+		house in the US. 1, how'd they figure that out, and 2, I don't believe it. \
+		Not that I counted. Not that they counted either.
+	|
+
+Light Time Use = WITH LOOKUP (
+	MODULO(Time,25),
+		         ([(0,0)-(24,1)],(0,0.116129),(12.1626,0.0935484),(16.065,0.083871),(17.7561\
+		,0.109677),(18.8618,0.318548),(19.9024,0.487903),(20.5528,0.552419),(21.9837,0.572581\
+		),(22.8293,0.491935),(24,0.158065) ))
+	~	Bool
+	~		|
+
+Number of Active AC units=
+	AC units in Colorado*AC usage percent of population
+	~	
+	~		|
+
+Outdoor Temperature = WITH LOOKUP (
+	MODULO(Time,25),
+		   ([(0,0)-(29.2415,36.7944)],(0,70),(2,60),(4,60),(6,55),(8,60),(10,70),(12,80),(14\
+		,80),(16,85),(18,85),(20,75),(22,72),(24,70) ))
+	~	F
+	~		|
+
+Power Consumed= INTEG (
+	Rate of Retail Power Demand,
+		0)
+	~	kW*hours
+	~	This should be close to 23 Million kwh by end of one day
+		https://investors.xcelenergy.com/files/doc_downloads/factbook/xcel-energy-e\
+		lectric-sales-by-opco-and-class-2023-q3.pdf
+	~	:SUPPLEMENTARY 
+	|
+
+Thermostat sd=
+	6
+	~	F
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 8760
+	~	Hour
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Hour
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP 
+	~	Hour [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Hour [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*The Dread Web
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,45,0
+10,1,Outdoor Temperature,3405,1240,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,Time,3546,1282,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,3,2,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,4,Thermostat setting,3076,979,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,5,AC usage percent of population,3033,1107,47,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,6,4,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,7,Thermostat sd,3205,1101,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,8,7,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,9,AC units in Colorado,2916,1215,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,10,Number of Active AC units,2901,1100,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,11,AC power consumption,2752,1091,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,12,9,10,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,13,5,10,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,14,Power Consumed,2206,1367,42,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,15,48,2039,1368,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,16,18,15,100,0,0,22,0,192,0,-1--1--1,,1|(2070,1368)|
+1,17,18,14,4,0,0,22,0,192,0,-1--1--1,,1|(2133,1368)|
+11,18,0,2097,1368,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,19,Rate of Retail Power Demand,2097,1398,60,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,20,11,19,1,0,0,0,0,192,0,-1--1--1,,1|(2400,1180)|
+10,21,Light Power Consumption,2667,1408,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,22,Individual House Light Consumption,2870,1531,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,23,22,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,24,Households with lights,2745,1567,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,25,24,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,26,Light Time Use,2858,1427,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,27,26,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,28,Time,3044,1480,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,29,28,26,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,30,21,19,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,31,Generation Capacity,1566,1104,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,32,Thermal Capacity,1388,1144,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,33,Solar Power Generated,1185,55,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,34,Wind Power generated,1305,376,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,35,32,31,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,36,Apparent Power Demand,1945,940,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,37,19,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,38,Power Surplus,1752,1050,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,39,36,38,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,40,31,38,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,41,Time,1422,-90,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,42,Coal Power Capacity,1026,1207,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,43,42,32,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,44,Natural Gas Capacity,1476,1353,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,45,44,32,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,46,Time of use Rates,2189,584,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,47,Time,2200,489,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,48,47,46,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,49,Profits For Utility,2228,874,60,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,50,48,2058,874,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,51,53,50,100,0,0,22,0,192,0,-1--1--1,,1|(2089,874)|
+1,52,53,49,4,0,0,22,0,192,0,-1--1--1,,1|(2145,874)|
+11,53,0,2117,874,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,54,Utility Revenue,2117,904,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,55,19,54,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,56,Hydro and Storage Capacity,1026,211,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,57,Residential Price Elasticity,2516,673,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,58,"Change in Rates %",2357,803,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+11,59,0,2612,795,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,60,percent Change in Power use,2612,829,42,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,61,58,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,62,57,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,63,Residential Rates,2203,674,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,64,46,63,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,65,63,58,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,66,63,54,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,67,Instantaneous Renewable Power Capacity,1240,542,69,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,68,56,67,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,69,33,67,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,70,34,67,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,71,67,31,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,72,Thermal Power Demand,1101,966,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,73,36,72,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,74,48,2439,874,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,75,77,49,100,0,0,22,0,192,0,-1--1--1,,1|(2318,874)|
+1,76,77,74,4,0,0,22,0,192,0,-1--1--1,,1|(2394,874)|
+11,77,0,2354,874,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,78,Operating Expenses,2354,904,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,79,Cost per kWh natural Gas,606,581,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,80,Cost per kWh Coal,597,725,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,81,Thermal Power Production Cost to Utility,779,669,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,82,79,81,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,83,80,81,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,84,Fraction of Coal Power to Thermal,1021,1358,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,85,Fraction of Natural Gas to Thermal,1091,1452,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,86,42,84,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,87,44,85,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,88,32,85,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,89,32,84,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,90,Fraction of Coal Power to Thermal,837,767,60,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,91,Fraction of Natural Gas to Thermal,849,580,56,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,92,91,81,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,93,90,81,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,94,Thermal Power Production Cost to Utility,2470,1074,69,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,95,94,78,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,96,Renewable Power Demand,1538,735,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,97,36,96,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,98,67,96,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,99,Renewable Cost to Utility,2532,948,47,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,100,99,78,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,101,Xcel Colorado Overheads,2501,1015,47,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,102,101,78,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,103,Other Residential Average Power Consumption per Household,1857,1373,60,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,104,103,19,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,105,Industrial Electric Consumption,1926,817,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,106,Base Rate,2318,576,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,107,106,58,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,108,60,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,109,60,4,1,0,0,0,0,192,0,-1--1--1,,1|(2939,907)|
+10,110,Fraction of households served by Xcel,2213,1482,69,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,111,Co2 Emissions,671,1411,60,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,112,Rate Changes,2010,661,38,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,113,112,63,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,114,Floored IFME delta,2720,666,60,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,115,114,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,116,Number of Households in CO,1943,1512,60,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,117,116,19,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,118,116,110,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,119,"Industrial/Commerical Rates",2045,756,96,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,120,119,54,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,121,105,54,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,122,105,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,123,Number of Households in CO,2993,1322,60,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,124,123,9,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,125,110,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,126,110,11,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,127,110,19,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,128,Weighted Average Cost of Thermal Power,393,634,56,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,129,90,128,1,0,0,0,0,192,0,-1--1--1,,1|(553,816)|
+1,130,91,128,1,0,0,0,0,192,0,-1--1--1,,1|(614,516)|
+1,131,80,128,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,132,79,128,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,133,Weighted Average Cost of Renewables,376,402,56,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,134,Elasticity of Thermal to Renewables,621,381,87,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,135,128,134,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,136,133,134,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,137,Fraction of Renewable Power to use,1054,585,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,138,134,137,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,139,137,96,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,140,96,72,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,141,Thermal Power Usage,890,1042,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,142,32,141,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,143,72,141,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,144,141,81,1,0,0,0,0,192,0,-1--1--1,,1|(891,853)|
+1,145,31,19,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,146,31,54,1,0,0,0,0,192,0,-1--1--1,,1|(1868,1107)|
+10,147,Blackout Scenario,1272,839,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,148,38,147,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,149,"Coal CO2/kwh",769,1608,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,150,"NG CO2/kwh",942,1622,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,151,Carbon Tax Rate,385,872,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,152,151,79,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,153,151,80,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,154,"Coal CO2/kwh",674,811,38,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,155,"NG CO2/kwh",695,497,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,156,155,79,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,157,154,80,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,158,48,906,1412,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,159,161,158,100,0,0,22,0,192,0,-1--1--1,,1|(858,1412)|
+1,160,161,111,4,0,0,22,0,192,0,-1--1--1,,1|(769,1412)|
+11,161,0,813,1412,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,162,Rate of CO2 Emission,813,1442,51,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,163,84,162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,164,85,162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,165,150,162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,166,149,162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,167,141,162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,168,147,137,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,169,147,72,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,170,32,72,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,171,PTC Rate Adjustment for new Renewables,1650,453,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,172,PTC Delta and Cost to Government,1812,704,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,173,96,172,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,174,171,172,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,175,172,78,1,0,0,0,0,192,0,-1--1--1,,1|(2189,754)|
+12,176,48,1285,213,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,177,179,176,100,0,0,22,0,192,0,-1--1--1,,1|(1225,213)|
+1,178,179,56,4,0,0,22,0,192,0,-1--1--1,,1|(1116,213)|
+11,179,0,1170,213,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,180,Change in Hydro Capacity,1170,247,51,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,181,Solar power vs time function,1325,-16,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,182,41,181,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,183,181,33,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,184,Solar Capacity,1359,52,42,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,185,48,1585,52,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,186,188,185,100,0,0,22,0,192,0,-1--1--1,,1|(1525,52)|
+1,187,188,184,4,0,0,22,0,192,0,-1--1--1,,1|(1432,52)|
+11,188,0,1469,52,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,189,Change in Solar Capacity,1469,86,42,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,190,184,33,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,191,48,1673,1349,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,192,194,191,100,0,0,22,0,192,0,-1--1--1,,1|(1638,1349)|
+1,193,194,44,4,0,0,22,0,192,0,-1--1--1,,1|(1564,1349)|
+11,194,0,1607,1349,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,195,Change in natural gas Capacity,1607,1383,51,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,196,48,794,1204,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,197,199,196,100,0,0,22,0,192,0,-1--1--1,,1|(848,1204)|
+1,198,199,42,4,0,0,22,0,192,0,-1--1--1,,1|(941,1204)|
+11,199,0,897,1204,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,200,Change in Coal Capacity,897,1234,60,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,201,Time,3351,781,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,202,Smart Thermostat Settings,3172,852,47,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,203,201,202,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,204,202,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,205,Proportion of new renewables,1625,288,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,206,184,205,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,207,56,205,1,0,0,0,0,192,0,-1--1--1,,1|(1318,148)|
+1,208,205,171,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,209,Clean Energy Plan Debt,2216,1019,56,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,210,48,2059,1018,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,211,213,210,100,0,0,22,0,192,0,-1--1--1,,1|(2094,1018)|
+1,212,213,209,4,0,0,22,0,192,0,-1--1--1,,1|(2145,1018)|
+11,213,0,2125,1018,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,214,Interest,2125,1048,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,215,48,2400,1021,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,216,218,209,100,0,0,22,0,192,0,-1--1--1,,1|(2298,1021)|
+1,217,218,215,4,0,0,22,0,192,0,-1--1--1,,1|(2363,1021)|
+11,218,0,2331,1021,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,219,Payments,2331,1051,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,220,219,78,1,0,0,0,0,192,0,-1--1--1,,1|(2325,976)|
+1,221,209,214,1,0,0,0,0,192,0,-1--1--1,,1|(2200,1075)|
+1,222,209,219,1,0,0,0,0,192,0,-1--1--1,,1|(2273,1086)|
+10,223,FINAL TIME,2190,1166,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,224,223,214,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,225,Wind Capacity,1333,293,60,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,226,225,205,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,227,48,1557,396,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,228,230,227,100,0,0,22,0,192,0,-1--1--1,,1|(1510,396)|
+1,229,230,225,4,0,0,22,0,192,0,-1--1--1,,1|(1468,293)|
+11,230,0,1468,396,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,231,Change in Wind Capacity,1468,426,60,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,232,225,34,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,233,Comfort Threshold,3358,1102,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,234,Percent of People Home,3521,968,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,235,201,234,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,236,234,233,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,237,233,4,1,0,0,0,0,192,0,-1--1--1,,1|(3247,1027)|
+10,238,PTC Rate Adjustment for new Renewables,643,245,47,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,239,238,134,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,240,Temperature in House f,3153,1238,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,241,240,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,242,240,233,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,243,1,233,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,244,House Temp delta,3151,1049,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,245,4,244,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,246,240,244,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,247,Electric Load of AC,2768,939,51,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,248,247,11,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,249,10,11,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,250,Fraction of Smart Thermostat users,3305,895,78,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,251,250,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,252,Net PTC cost to government,1776,383,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,253,172,252,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,254,Cost of Smart Thermostat,3279,1362,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,255,Net Cost of installation,3159,1362,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,256,250,255,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,257,123,255,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,258,254,255,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,259,Average Power Factor,1903,1148,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,260,259,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,261,Xcel GP,793,268,42,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,262,Xcel target Gp,916,276,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,263,GP Delta,876,406,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,264,261,263,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,265,262,263,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,266,263,134,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,267,PTC Rate,1857,269,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,268,267,171,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Renewable Cost Calculation
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Hydro and Storage Capacity,-209,86,42,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,2,Solar Power Generated,-34,120,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,3,Wind Power generated,228,116,51,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,4,Instantaneous Renewable Power Capacity,59,-63,69,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,5,Hydro Renewable Frac,-206,207,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,6,Solar Renewable Frac,30,207,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,7,Wind Renewable Frac,215,210,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,8,1,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,9,4,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,10,2,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,11,4,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,12,3,7,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,13,4,7,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,14,Renewable Power Demand,446,11,51,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,15,Hydro Cost per KwH,575,28,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,16,Solar Cost per kWh,660,106,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,17,Wind Cost per kWh,667,214,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,18,Renewable Cost to Utility,251,409,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,19,5,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,20,6,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,21,7,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,22,14,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,23,15,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,24,16,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,25,17,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,26,0,-193,-130,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+Renewable Costs Calculations
+10,27,Weighted Average Cost of Renewables,230,557,56,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,28,5,27,1,0,0,0,0,192,0,-1--1--1,,1|(-39,432)|
+1,29,6,27,1,0,0,0,0,192,0,-1--1--1,,1|(81,398)|
+1,30,7,27,1,0,0,0,0,192,0,-1--1--1,,1|(169,382)|
+1,31,15,27,1,0,0,0,0,192,0,-1--1--1,,1|(450,311)|
+1,32,16,27,1,0,0,0,0,192,0,-1--1--1,,1|(497,338)|
+1,33,17,27,1,0,0,0,0,192,0,-1--1--1,,1|(519,444)|
+10,34,Wind Cost Adjustment,580,536,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,35,34,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,36,34,27,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Xcel Overheads Calculation
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+12,1,0,60,202,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+Xcel Overhead Calculations
+10,2,Cost of Sales,105,358,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,3,Fractional Distribution of Cost to Colorado,347,224,74,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,4,3,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,5,Conservation and Demand side managing,273,400,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,6,3,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,7,Depreciation and Amoritization,465,377,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,8,3,7,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,9,"Taxes (Other than Income Taxes)",615,320,56,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,10,3,9,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,11,Xcel Colorado Overheads,387,540,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,12,2,11,1,0,0,0,0,192,0,-1--1--1,,1|(202,480)|
+1,13,5,11,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,14,7,11,1,0,0,0,0,192,0,-1--1--1,,1|(443,456)|
+1,15,9,11,1,0,0,0,0,192,0,-1--1--1,,1|(549,462)|
+12,16,0,561,155,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+This is just Xcel, while much of our other data uses the entire state and all it's electricity providers
+10,17,Power Line Maintenance,-45,331,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,18,3,17,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,19,17,11,1,0,0,0,0,192,0,-1--1--1,,1|(125,488)|
+12,20,0,1093,356,300,200,0,15,0,0,1,0,0,0,0,0,0,0,0,0
+Xcel_Profits
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Other Energy Sources Consumed Colorado
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Water Heating,167,345,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,Cooking,337,340,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,3,All Refrigerators,499,343,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,4,Freezers,632,341,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,5,Clothes Washers,755,345,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,6,Clothes Dryers,882,337,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,7,All Tvs,1015,327,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,8,Other Residential Average Power Consumption per Household,578,504,60,34,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,9,1,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,10,2,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,11,3,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,12,4,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,13,5,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,14,6,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,15,7,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,16,percent Change in Power use,437,575,47,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,17,16,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,18,ratio of water heating to total consumption,-15,337,74,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,19,1,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,20,Instant Power Consumption per household,33,493,69,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,21,20,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*AC and Light Consumption Testing
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Ac Total Daily Consumption,313,308,51,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,Lights Total Daily Consumption,306,406,56,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,3,48,97,307,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,4,9,3,100,0,0,22,0,192,0,-1--1--1,,1|(142,307)|
+1,5,9,1,4,0,0,22,0,192,0,-1--1--1,,1|(226,307)|
+12,6,48,102,408,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,7,11,6,100,0,0,22,0,192,0,-1--1--1,,1|(143,408)|
+1,8,11,2,4,0,0,22,0,192,0,-1--1--1,,1|(218,408)|
+11,9,0,184,307,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,10,Ac Consumption Rate,184,341,51,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+11,11,0,181,408,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,12,Light power consumption rate,181,442,51,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,13,AC power consumption,173,216,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,14,13,10,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,15,Light Power Consumption,170,571,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,16,15,12,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,17,Total Renewable Power used,729,307,47,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,18,Total Thermal Power used,710,421,60,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,19,48,519,420,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,20,22,19,100,0,0,22,0,192,0,-1--1--1,,1|(556,420)|
+1,21,22,18,4,0,0,22,0,192,0,-1--1--1,,1|(622,420)|
+11,22,0,589,420,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,23,Thermal Power usage proxy,589,450,60,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,24,48,523,309,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,25,27,24,100,0,0,22,0,192,0,-1--1--1,,1|(567,309)|
+1,26,27,17,4,0,0,22,0,192,0,-1--1--1,,1|(647,309)|
+11,27,0,607,309,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,28,Renewable Power use Proxy,607,343,42,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,29,Renewable Power Demand,591,198,60,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,30,Thermal Power Usage,581,567,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,31,30,23,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,32,29,28,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,33,Percent of net Power used for Renewables,928,385,65,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,34,17,33,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,35,18,33,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Xcel Rate Adjustment by Profit Margins
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Utility Revenue,949,8,38,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,2,Xcel GP,864,138,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,3,1,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,4,Proposed Rate Increase,956,224,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,5,2,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,6,Rate application Time,770,310,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,7,Rate Changes,951,440,56,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,8,48,716,439,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,9,11,8,100,0,0,22,0,192,0,-1--1--1,,1|(765,439)|
+1,10,11,7,4,0,0,22,0,192,0,-1--1--1,,1|(855,439)|
+11,11,0,810,439,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,12,Rate Increase Pulse,810,469,60,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,13,4,12,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,14,6,12,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,15,FINAL TIME,785,607,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,16,15,12,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,17,Operating Expenses,733,49,47,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,18,17,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,19,0,327,138,300,200,0,15,0,0,1,0,0,0,0,0,0,0,0,0
+Xcel_Profits
+10,20,Xcel target Gp,1053,145,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,21,20,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Household Income Elasticity Correction
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Median household Income,412,-10,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,Number of Households in CO,486,-84,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,3,Median Household Income per hour,413,83,74,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,4,1,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,5,Other Residential Average Power Consumption per Household,770,11,60,34,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,6,Light Power Consumption,1229,-32,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,7,AC power consumption,1202,148,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,8,Instant Power Consumption per household,607,205,69,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,9,Residential Rates,744,305,33,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,10,Instant cost to consumer per household,565,310,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,11,8,10,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,12,9,10,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,13,Instantaneous Fraction of Median Income for Electricity,383,268,69,34,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,14,3,13,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,15,10,13,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,16,Maximum IFME,146,267,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,17,Floored IFME delta,254,381,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,18,16,17,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,19,13,17,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,20,Singular Household Power Consumption,912,219,69,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,21,48,714,216,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,22,24,21,100,0,0,22,0,192,0,-1--1--1,,1|(752,216)|
+1,23,24,20,4,0,0,22,0,192,0,-1--1--1,,1|(817,216)|
+11,24,0,786,216,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,25,Power Consumption per house,786,250,51,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,26,8,25,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,27,5,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,28,7,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,29,6,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,30,Fraction of households served by Xcel,636,-14,69,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,31,2,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,32,30,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,33,Singular Household Electric Expenses,742,411,42,34,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,34,48,551,415,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,35,37,34,100,0,0,22,0,192,0,-1--1--1,,1|(592,415)|
+1,36,37,33,4,0,0,22,0,192,0,-1--1--1,,1|(668,415)|
+11,37,0,630,415,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,38,Instant Electric Expense Per House,630,445,78,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,39,10,38,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,40,0,993,365,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+Because of how households vs customers are defined by the grid vs the EPA, multiply the stocks here by 2 for a more accurate representation.
+10,41,Minimum Wage,256,-84,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,42,41,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Outage Tracking
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Outage Tracker,441,472,42,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,2,48,245,471,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,3,5,2,100,0,0,22,0,192,0,-1--1--1,,1|(288,471)|
+1,4,5,1,4,0,0,22,0,192,0,-1--1--1,,1|(366,471)|
+11,5,0,327,471,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,6,Blackouts,327,501,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,7,Blackout Scenario,306,301,42,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,8,7,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,9,Net Blackout Ratio,637,334,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,10,FINAL TIME,751,252,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,11,10,9,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,12,1,9,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 9
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*AC Thermodynamics
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Outdoor Temperature,234,201,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,2,cp of Air,789,2,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,3,Enthalpy of Air Outside,391,207,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,4,Enthalpy of air into House,836,258,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,5,Density of Air outdoors,290,404,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,6,Volume flow of AC unit,711,154,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,7,Mass flow into house,683,326,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,8,6,7,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,9,cv of air,839,618,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,10,Volume of house,1223,183,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,11,2,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,12,cp of Water,521,-52,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,13,Relative Humidity,219,-211,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,14,Partial Pressure of Water vapor,163,-106,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,15,13,14,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,16,Molar mass of dry air,471,-199,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,17,humidity ratio,345,-77,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,18,14,17,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,19,16,17,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,20,17,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,21,12,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,22,Evaporation energy of water,724,-96,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,23,22,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,24,7,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,25,Rate of Heat Rejction by AC,969,19,56,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,26,COP of AC unit,1067,-103,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,27,Electric Load of AC,1181,-21,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,28,25,27,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,29,26,27,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,30,25,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,31,Stored Energy of House,1174,450,60,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,32,48,986,449,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,33,35,32,100,0,0,22,0,192,0,-1--1--1,,1|(1022,449)|
+1,34,35,31,4,0,0,22,0,192,0,-1--1--1,,1|(1087,449)|
+11,35,0,1055,449,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,36,Energy in to house,1055,479,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,37,48,1578,449,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,38,40,31,100,0,0,22,0,192,0,-1--1--1,,1|(1315,449)|
+1,39,40,37,4,0,0,22,0,192,0,-1--1--1,,1|(1488,449)|
+11,40,0,1403,449,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,41,Energy out,1403,479,47,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,42,4,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,43,7,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,44,7,41,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,45,Starting House Temperature,1170,595,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,46,45,31,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,47,9,31,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+10,48,humidity ratio,1315,578,42,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,49,48,31,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,50,31,41,1,0,0,0,0,192,0,-1--1--1,,1|(1325,391)|
+10,51,mass of air in house,1039,223,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,52,Molar Mass of wet air,176,312,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,53,52,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,54,17,52,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,55,5,7,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,56,5,51,1,0,0,0,0,192,0,-1--1--1,,1|(736,400)|
+1,57,10,51,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,58,51,31,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,59,51,41,1,0,0,0,0,192,0,-1--1--1,,1|(1318,300)|
+10,60,Temperature in House C,1000,709,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,61,31,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,62,humidity ratio,791,713,42,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,63,62,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,64,9,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,65,51,60,1,0,0,0,0,192,0,-1--1--1,,1|(948,457)|
+10,66,cv of water vapor,794,520,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,67,66,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,68,66,31,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+10,69,Outdoor Temperature C,74,131,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,70,1,69,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,71,69,14,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,72,69,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,73,specific internal energy,1224,311,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,74,31,73,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,75,51,73,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,76,Temperature in House f,1171,709,51,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,77,60,76,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,78,AC On,1541,631,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,79,78,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,80,78,41,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,81,60,3,1,0,0,0,0,192,0,-1--1--1,,1|(606,532)|
+1,82,73,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,83,Heat Transfer into house,483,621,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,84,69,83,1,0,0,0,0,192,0,-1--1--1,,1|(155,442)|
+1,85,83,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,86,60,83,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,87,Combo cv,653,745,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,88,9,87,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,89,62,87,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,90,66,87,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,91,Cycle duration as fraction of hour,1390,236,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,92,91,41,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,93,91,36,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,94,SA over R value,397,859,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,95,Average square footage of a living place in the us,900,-223,69,34,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,96,95,25,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,97,94,83,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,98,91,27,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,99,78,27,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,100,AC usage percent of population,1728,703,51,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,101,100,78,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,102,Insulation imperfections,575,847,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,103,102,94,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,104,0,1515,-262,300,200,0,15,0,0,1,0,0,0,0,0,0,0,0,0
+GRAPH
+10,105,Additional Insulation R value,397,899,68,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,106,105,94,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Solution validation
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+10,1,Percent of net Power used for Renewables,418,270,69,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,2,Xcel GP,620,270,42,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,3,Xcel target Gp,757,281,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,4,FINAL TIME,913,254,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,5,Average Xcel GP vs Target,673,373,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,6,2,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,7,4,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,8,Optimization function,529,485,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,9,1,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,10,5,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,11,Weight for Stability,414,629,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,12,Weight for Renewable use,566,628,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,13,Weight for Xcel Profit Margin,751,630,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,14,11,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,15,12,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,16,13,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,17,Net Blackout Ratio,255,412,56,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,18,17,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,19,3,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,20,Weight For Consumer Expenses,849,577,47,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,21,20,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,22,Average Relative IFME Delta,761,455,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,23,Instantaneous Fraction of Median Income for Electricity,929,378,83,34,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,24,Maximum IFME,995,504,38,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,25,23,22,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,26,24,22,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,27,4,22,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,28,22,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,29,percent Change in Power use,126,354,47,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,30,Average Percent power use,254,301,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,31,29,30,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,32,30,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,33,FINAL TIME,207,176,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,34,33,30,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,35,Weight for Consumer Power Use,311,566,47,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,36,35,8,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,37,Minimum Wage,1151,181,56,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,38,PTC Rate,1131,260,38,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,39,Wind Cost Adjustment,1137,354,47,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,40,0,1709,294,300,200,0,15,0,0,1,0,0,0,0,0,0,0,0,0
+Optimization_Function
+10,41,Net PTC cost to government,1124,590,60,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,42,Singular Household Electric Expenses,1093,652,42,34,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,43,Median household Income,1150,94,42,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,44,SA over R value,1135,426,42,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,45,Insulation imperfections,1146,486,55,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,46,45,44,0,0,0,0,0,0,0,-1--1--1,,1|(0,0)|
+10,47,Additional Insulation R value,1302,413,56,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,48,47,44,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,49,Carbon Tax Rate,878,99,47,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 12
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 13
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 14
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,0
+///---\\\
+:GRAPH Xcel_Profits
+:TITLE Xcel Profits
+:SCALE
+:VAR Profits For Utility
+:DATASET 
+
+:GRAPH Power_Demand
+:TITLE Power Demand Graph
+:SCALE
+:VAR Thermal Power Usage
+:DATASET 
+:SCALE
+:VAR Renewable Power Demand
+:DATASET 
+:SCALE
+:VAR Power Demand
+:DATASET 
+:SCALE
+:VAR Blackout Scenario
+:DATASET 
+
+:GRAPH Enthalpy_Comparison_AC
+:TITLE Enthalpy_Comparison_AC
+:SCALE
+:VAR Enthalpy of air into House
+:DATASET 
+:SCALE
+:VAR specific internal energy
+:DATASET 
+:SCALE
+:VAR AC On
+:DATASET 
+:SCALE
+:VAR Temperature in House f
+:DATASET 
+
+:GRAPH Temperature_Comparison
+:TITLE Temperature_Comparison
+:SCALE
+:VAR Outdoor Temperature C
+:DATASET 
+:SCALE
+:VAR Temperature of Air into house
+:DATASET 
+
+:GRAPH GRAPH
+:TITLE GRAPH
+:SCALE
+:VAR Power Consumed
+:DATASET 
+
+:GRAPH Success_Graph
+:TITLE Success Graph
+:SCALE
+:VAR Power Consumed
+:DATASET 
+:SCALE
+:VAR Net Cost of installation
+:DATASET 
+:SCALE
+:VAR Percent of net Power used for Renewables
+:DATASET 
+:SCALE
+:VAR Xcel GP
+:DATASET 
+:SCALE
+:VAR Singular Household Electric Expenses
+:DATASET 
+
+:GRAPH Optimization_Function
+:TITLE Optimization_Function
+:SCALE
+:VAR Optimization function
+:DATASET 
+:L<%^E!@
+1:Smart Thermostat x2.vdfx
+1:Control.vdfx
+4:Time
+5:Fraction of Renewable Power to use
+9:Smart Thermostat x2
+19:45,0
+24:0
+25:8760
+26:8760
+22:Celcius
+22:kWh
+22:Million Households
+22:Million AC units
+22:kW
+22:F
+22:$
+22:kg Co2
+22:$
+22:$/kg Co2
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Courier|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
